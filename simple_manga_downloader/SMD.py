@@ -15,7 +15,9 @@ import os
 import imghdr
 import time
 import requests
+import re
 
+REGEX_NO_WORD = re.compile(r'(\W|_)+')
 
 def main():
     try:
@@ -345,7 +347,15 @@ def filter_downloaded(manga_dir, wanted):
         filtered = []
         for n in wanted:
             chapter_name = f"Chapter {n}"
-            if chapter_name not in os.listdir(manga_dir):
+            chapter_path = os.path.join(manga_dir, chapter_name)
+            if os.path.exists(chapter_path):
+                if not os.path.isdir(chapter_path):
+                    raise RuntimeError('Unexpected file: %s' % chapter_path)
+                if not os.listdir(chapter_path):
+                    # Chapter folder exists but is empty.
+                    os.rmdir(chapter_path)
+                    filtered.append(n)
+            else:
                 filtered.append(n)
     return filtered
 
@@ -487,7 +497,9 @@ def page_name_gen(manga_title, data, chapter_name):
         page_string = f"Page {n}"
 
         if data["title"]:
-            title = f"{html.unescape(data['title'])} -"
+            clean_title = html.unescape(data['title'])
+            clean_title = REGEX_NO_WORD.sub(' ', clean_title)
+            title = f"{clean_title} -"
             image_name = " ".join([base_name, title, page_string])
         else:
             image_name = " ".join([base_name, page_string])
