@@ -16,8 +16,16 @@ import imghdr
 import time
 import requests
 import re
+import shutil
 
 REGEX_NO_WORD = re.compile(r'(\W|_)+')
+
+
+def delete_directory(p: Path):
+    assert p.is_dir()
+    shutil.rmtree(p.as_posix())
+    if p.exists():
+        raise OSError('Unable to delete folder: %s' % p)
 
 def main():
     try:
@@ -485,9 +493,9 @@ def get_chapter(Manga, num):
             else:
                 count += 1
     except KeyboardInterrupt:
-        shutil.rmtree(ch_dir)
+        delete_directory(ch_dir)
+        print('(chapter folder removed)')
         raise KeyboardInterrupt
-    return (count, failed)
 
 
 def page_name_gen(manga_title, data, chapter_name):
