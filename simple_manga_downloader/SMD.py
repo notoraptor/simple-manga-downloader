@@ -477,7 +477,8 @@ def get_chapter(Manga, num):
     ch_dir.mkdir()
 
     try:
-        name_gen = page_name_gen(title,
+        name_gen = page_name_gen(ch_dir,
+                                 title,
                                  Manga.chapters[num],
                                  chapter_name)
         for page_name, link in name_gen:
@@ -498,19 +499,22 @@ def get_chapter(Manga, num):
         raise KeyboardInterrupt
 
 
-def page_name_gen(manga_title, data, chapter_name):
+def page_name_gen(ch_dir, manga_title, data, chapter_name):
     '''A generator that yields a tuple with the page name and link'''
     for n, link in enumerate(data["pages"]):
         base_name = f"{manga_title} - {chapter_name} -"
         page_string = f"Page {n}"
 
         if data["title"]:
-            clean_title = html.unescape(data['title'])
-            clean_title = REGEX_NO_WORD.sub(' ', clean_title)
+            clean_title = REGEX_NO_WORD.sub(' ', html.unescape(data['title']))
             title = f"{clean_title} -"
             image_name = " ".join([base_name, title, page_string])
         else:
             image_name = " ".join([base_name, page_string])
+
+        ultimate_link = ch_dir / image_name
+        if len(str(ultimate_link)) >= 128:
+            image_name = f"{chapter_name} - {page_string}"
 
         # Replaces a "/" in titles to something usable
         image_name = image_name.replace("/", "╱")
