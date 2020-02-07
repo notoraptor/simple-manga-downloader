@@ -22,7 +22,9 @@ REGEX_NO_WORD = re.compile(r'(\W|_)+')
 
 
 def delete_directory(p: Path):
-    assert p.is_dir()
+    if not p.exists():
+        return
+    assert p.is_dir(), p
     shutil.rmtree(p.as_posix())
     if p.exists():
         raise OSError('Unable to delete folder: %s' % p)

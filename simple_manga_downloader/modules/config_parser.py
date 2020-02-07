@@ -58,9 +58,9 @@ class Config():
         return self.status
 
     def load_config(self):
-        '''
+        """
         Loads the config if present, uses defaults if missing setting
-        '''
+        """
         if self.config_path.is_file():
             try:
                 with open(self.config_path, "r") as f:
