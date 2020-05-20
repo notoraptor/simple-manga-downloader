@@ -499,6 +499,7 @@ def get_chapter(Manga, num):
         delete_directory(ch_dir)
         print('(chapter folder removed)')
         raise KeyboardInterrupt
+    return (count, failed)
 
 
 def page_name_gen(ch_dir, manga_title, data, chapter_name):
