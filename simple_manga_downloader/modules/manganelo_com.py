@@ -37,6 +37,7 @@ class Manganelo:
         self.cover_url = soup.find(class_="info-image").img["src"]
 
         self.series_title = soup.find(class_="story-info-right").find("h1").text
+        self.series_title = self.series_title.replace("/", " - ")
         if title_return:
             return True
 
